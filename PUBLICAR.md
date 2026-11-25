@@ -35,7 +35,7 @@ As configurações e os scripts da automação ficam em `.github`; essa pasta n�
 
 ## Datas livres (calendário de disponibilidade)
 
-A seção `#datas-livres` mostra cada dia só como livre ou ocupado, sem nome de evento. Verde = livre de sexta a domingo, amarelo = livre de segunda a quinta, vermelho = ocupado. O botão copia as datas livres de um intervalo de meses em texto pronto para o WhatsApp.
+A seção `#datas-livres` mostra cada dia só como livre ou ocupado, sem nome de evento. Verde = sábado ou domingo livre, amarelo = segunda a sexta (a banda não faz show), vermelho = ocupado. A lista do WhatsApp traz só sábados e domingos livres. O botão copia as datas livres de um intervalo de meses em texto pronto para o WhatsApp.
 
 Dias ocupados = todos os eventos da agenda SHOWS (inclusive privados e `[nao-site]`) + as agendas de bloqueio. Para bloquear datas sem mostrar detalhes (ex.: "NÃO MARCAR SHOW"):
 

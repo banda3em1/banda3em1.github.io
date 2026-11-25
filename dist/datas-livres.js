@@ -15,8 +15,8 @@
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || "").trim());
     return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
   }
-  // Seg a qui = meio da semana (amarelo). Sex, sáb e dom = fim de semana (verde).
-  function meioDaSemana(d) { var w = d.getDay(); return w >= 1 && w <= 4; }
+  // A banda só toca sábado e domingo. Seg a sex = sem show (amarelo).
+  function meioDaSemana(d) { var w = d.getDay(); return w >= 1 && w <= 5; }
 
   function diasOcupados(eventos, bloqueios) {
     var set = new Set();
@@ -48,7 +48,7 @@
     return n;
   }
 
-  function textoWhatsApp(ocupados, deMes, ateMes, incluirSemana, hoje) {
+  function textoWhatsApp(ocupados, deMes, ateMes, hoje) {
     var linhas = [];
     var ini = new Date(deMes.getFullYear(), deMes.getMonth(), 1);
     var fim = new Date(ateMes.getFullYear(), ateMes.getMonth() + 1, 0);
@@ -56,13 +56,13 @@
       ? MESES_CURTOS[ini.getMonth()] + "/" + ini.getFullYear()
       : MESES_CURTOS[ini.getMonth()] + "/" + ini.getFullYear() + " a " + MESES_CURTOS[fim.getMonth()] + "/" + fim.getFullYear();
     linhas.push("🎸 *Banda 3 em 1 · Datas livres*");
-    linhas.push("📅 " + titulo + (incluirSemana ? "" : " (sexta a domingo)"));
+    linhas.push("📅 " + titulo + " (sábados e domingos)");
     var total = 0;
     for (var m = new Date(ini); m <= fim; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)) {
       var semanas = [], semana = [];
       var ultimo = new Date(m.getFullYear(), m.getMonth() + 1, 0);
       for (var d = new Date(m); d <= ultimo; d.setDate(d.getDate() + 1)) {
-        var livre = d >= hoje && !ocupados.has(iso(d)) && (incluirSemana || !meioDaSemana(d));
+        var livre = d >= hoje && !ocupados.has(iso(d)) && !meioDaSemana(d);
         if (livre) semana.push(String(d.getDate()).padStart(2, "0") + " " + DIAS[d.getDay()]);
         // Fecha a linha no domingo: cada linha = uma semana.
         if (d.getDay() === 0 && semana.length) { semanas.push(semana); semana = []; }
@@ -96,8 +96,8 @@
     var inicio = new Date(primeiroMes);
 
     var legenda = el("ul", { class: "dl-legenda", "aria-label": "Legenda" }, [
-      el("li", {}, [el("span", { class: "dl-bolinha dl-livre" }), document.createTextNode("Livre (sex a dom)")]),
-      el("li", {}, [el("span", { class: "dl-bolinha dl-semana" }), document.createTextNode("Livre (seg a qui)")]),
+      el("li", {}, [el("span", { class: "dl-bolinha dl-livre" }), document.createTextNode("Livre (sáb e dom)")]),
+      el("li", {}, [el("span", { class: "dl-bolinha dl-semana" }), document.createTextNode("Seg a sex: não fazemos show")]),
       el("li", {}, [el("span", { class: "dl-bolinha dl-ocupado" }), document.createTextNode("Ocupado")])
     ]);
     var btAnt = el("button", { type: "button", class: "dl-nav", "aria-label": "Meses anteriores", text: "‹" });
@@ -116,7 +116,6 @@
     var padraoAte = new Date(hoje.getMonth() >= 6 ? hoje.getFullYear() + 1 : hoje.getFullYear(), 6, 1);
     if (padraoAte < primeiroMes) padraoAte = new Date(primeiroMes.getFullYear(), primeiroMes.getMonth() + 5, 1);
     selAte.value = iso(padraoAte);
-    var chkSemana = el("input", { type: "checkbox", id: "dl-semana" });
     var btCopiar = el("button", { type: "button", class: "btn btn-primary btn-sm dl-copiar", text: "Copiar datas livres para o WhatsApp" });
     var aviso = el("p", { class: "dl-aviso", role: "status", "aria-live": "polite" });
     var painel = el("div", { class: "dl-painel" }, [
@@ -125,7 +124,6 @@
         el("label", { for: "dl-de" }, [document.createTextNode("De"), selDe]),
         el("label", { for: "dl-ate" }, [document.createTextNode("Até"), selAte])
       ]),
-      el("label", { class: "dl-check", for: "dl-semana" }, [chkSemana, document.createTextNode("Incluir segunda a quinta")]),
       btCopiar, aviso
     ]);
     raiz.replaceChildren(el("div", { class: "dl-grade" }, [cal, painel]));
@@ -149,7 +147,7 @@
           var d = new Date(mes.getFullYear(), mes.getMonth(), dia);
           var passado = d < hoje, ocupado = ocupados.has(iso(d));
           var classe = passado ? "dl-passado" : ocupado ? "dl-ocupado" : meioDaSemana(d) ? "dl-semana" : "dl-livre";
-          var estado = passado ? "já passou" : ocupado ? "ocupado" : "livre";
+          var estado = passado ? "já passou" : ocupado ? "ocupado" : meioDaSemana(d) ? "sem show (seg a sex)" : "livre";
           grade.appendChild(el("span", { class: "dl-dia " + classe + (+d === +hoje ? " dl-hoje" : ""), title: estado, "aria-label": dia + " de " + MESES[mes.getMonth()] + ": " + estado, text: String(dia) }));
         }
         meses.appendChild(el("div", { class: "dl-mes" }, [el("p", { class: "dl-mes-nome", text: MESES[mes.getMonth()] + " " + mes.getFullYear() }), grade]));
@@ -161,7 +159,7 @@
     selDe.addEventListener("change", function () { if (selAte.value < selDe.value) selAte.value = selDe.value; });
     selAte.addEventListener("change", function () { if (selAte.value < selDe.value) selDe.value = selAte.value; });
     btCopiar.addEventListener("click", async function () {
-      var r = textoWhatsApp(ocupados, parse(selDe.value), parse(selAte.value), chkSemana.checked, hoje);
+      var r = textoWhatsApp(ocupados, parse(selDe.value), parse(selAte.value), hoje);
       var ok = await copiar(r.texto);
       aviso.textContent = ok ? "Copiado! " + r.total + " datas livres. É só colar no WhatsApp." : "Não deu para copiar automaticamente.";
     });

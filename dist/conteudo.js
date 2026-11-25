@@ -634,7 +634,7 @@ window.CONTEUDO = {
     "selo": "Disponibilidade",
     "titulo": "Datas",
     "destaque": "livres",
-    "subtitulo": "Veja os dias em que a Banda 3 em 1 ainda está disponível. Achou uma data? Chame no WhatsApp para garantir."
+    "subtitulo": "A Banda 3 em 1 toca aos sábados e domingos. Veja as datas ainda livres e chame no WhatsApp para garantir a sua."
   },
   "GALERIA_TEXTOS": {
     "selo": "Fotos",
