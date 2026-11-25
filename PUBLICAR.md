@@ -32,3 +32,15 @@ node .github/scripts/sync-agenda.cjs
 
 Abra o site por um servidor HTTP local para permitir a leitura de `assets/agenda.json`.
 As configurações e os scripts da automação ficam em `.github`; essa pasta não é publicada como parte do site.
+
+## Datas livres (calendário de disponibilidade)
+
+A seção `#datas-livres` mostra cada dia só como livre ou ocupado, sem nome de evento. Verde = livre de sexta a domingo, amarelo = livre de segunda a quinta, vermelho = ocupado. O botão copia as datas livres de um intervalo de meses em texto pronto para o WhatsApp.
+
+Dias ocupados = todos os eventos da agenda SHOWS (inclusive privados e `[nao-site]`) + as agendas de bloqueio. Para bloquear datas sem mostrar detalhes (ex.: "NÃO MARCAR SHOW"):
+
+1. No Google Agenda da conta da banda, abra a agenda de bloqueios → Configurações e compartilhamento.
+2. Em "Permissões de acesso", marque "Disponibilizar publicamente" e escolha "Ver apenas livre/ocupado (ocultar detalhes)".
+3. Copie o "ID da agenda" (em "Integrar agenda") e cole em `dist/conteudo.js`, em `agendaBloqueios.ids`.
+
+A rotina grava só as datas em `assets/bloqueios.json`, junto com a agenda de shows.

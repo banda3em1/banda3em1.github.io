@@ -1,6 +1,6 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const {convert} = require('./sync-agenda.cjs');
+const {convert, busyDates} = require('./sync-agenda.cjs');
 const now = new Date('2026-09-24T12:00:00Z');
 const calendar = events => 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\n' + events + '\r\nEND:VCALENDAR';
 const event = (uid, fields) => `BEGIN:VEVENT\r\nUID:${uid}\r\n${fields}\r\nEND:VEVENT`;
@@ -30,4 +30,15 @@ test('recorrências respeitam exclusões e cancelamentos', () => {
 test('agenda vazia remove eventos anteriores; erro não vira agenda vazia', () => {
   assert.deepEqual(convert(calendar(''),now).eventos,[]);
   assert.throws(()=>convert('<html>Erro</html>',now));
+});
+test('datas ocupadas: só datas, inclui privados e [nao-site], ignora cancelados', () => {
+  const source=calendar([
+    event('all','DTSTART;VALUE=DATE:20261003\r\nDTEND;VALUE=DATE:20261005\r\nSUMMARY:Casamento'),
+    event('night','DTSTART:20261010T010000Z\r\nDTEND:20261010T060000Z\r\nSUMMARY:Show'),
+    event('private','DTSTART;VALUE=DATE:20261012\r\nSUMMARY:Busy\r\nCLASS:PRIVATE'),
+    event('hide','DTSTART;VALUE=DATE:20261013\r\nSUMMARY:Não marcar show [nao-site]'),
+    event('cancel','DTSTART;VALUE=DATE:20261014\r\nSUMMARY:Cancelado\r\nSTATUS:CANCELLED'),
+    event('old','DTSTART;VALUE=DATE:20260901\r\nSUMMARY:Passado')
+  ].join('\r\n'));
+  assert.deepEqual(busyDates(source,now),['2026-10-03','2026-10-04','2026-10-09','2026-10-12','2026-10-13']);
 });

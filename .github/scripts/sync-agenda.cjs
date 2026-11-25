@@ -47,20 +47,57 @@ function convert(source, now = new Date()) {
   return { atualizadoEm:now.toISOString(), eventos:events.sort((a,b) => (a.data+a.horario).localeCompare(b.data+b.horario)) };
 }
 
-async function main() {
-  const url = 'https://calendar.google.com/calendar/ical/' + encodeURIComponent(config.id) + '/public/basic.ics';
-  let source;
-  if (process.argv[2]) source = fs.readFileSync(process.argv[2], 'utf8');
-  else {
-    const response = await fetch(url, {signal:AbortSignal.timeout(30000)});
-    if (!response.ok) throw Error('Google Agenda: HTTP ' + response.status);
-    source = await response.text();
+// Só as datas ocupadas, sem nome, local ou horário. Usado pelo calendário de datas livres.
+// Entram todos os eventos não cancelados, inclusive privados e os marcados com [nao-site].
+function busyDates(source, now = new Date()) {
+  if (!source.includes('BEGIN:VCALENDAR') || !source.includes('END:VCALENDAR')) throw Error('Resposta inválida do Google');
+  const parsed = ical.sync.parseICS(source);
+  const from = new Date(now.getTime() - 86400000);
+  const to = new Date(now.getTime() + 730 * 86400000);
+  const today = day(now, zone);
+  const dates = new Set();
+  for (const event of Object.values(parsed)) {
+    if (event.type !== 'VEVENT') continue;
+    for (const instance of ical.expandRecurringEvent(event, { from, to, expandOngoing:true })) {
+      if (instance.event.status === 'CANCELLED') continue;
+      const timeZone = instance.isFullDay ? (instance.start.tz || event.start.tz || Intl.DateTimeFormat().resolvedOptions().timeZone) : zone;
+      const start = day(instance.start, timeZone);
+      const end = instance.end ? day(new Date(instance.end.getTime() - 1), timeZone) : start;
+      // Show que passa da meia-noite ocupa só o dia em que começa.
+      const last = !instance.isFullDay && instance.end && instance.end - instance.start < 86400000 ? start : end;
+      for (let d = new Date(start + 'T12:00:00Z'); day(d, 'UTC') <= last; d = new Date(d.getTime() + 86400000)) {
+        const value = day(d, 'UTC');
+        if (value >= today) dates.add(value);
+      }
+    }
   }
-  const output = convert(source);
-  const destination = path.join(root, 'dist/assets/agenda.json');
-  fs.writeFileSync(destination + '.tmp', JSON.stringify(output,null,2) + '\n');
+  return [...dates].sort();
+}
+
+async function download(id) {
+  const url = 'https://calendar.google.com/calendar/ical/' + encodeURIComponent(id) + '/public/basic.ics';
+  const response = await fetch(url, {signal:AbortSignal.timeout(30000)});
+  if (!response.ok) throw Error('Google Agenda (' + id + '): HTTP ' + response.status);
+  return response.text();
+}
+
+function write(file, data) {
+  const destination = path.join(root, 'dist/assets', file);
+  fs.writeFileSync(destination + '.tmp', JSON.stringify(data,null,2) + '\n');
   fs.renameSync(destination + '.tmp', destination);
+}
+
+async function main() {
+  const source = process.argv[2] ? fs.readFileSync(process.argv[2], 'utf8') : await download(config.id);
+  const output = convert(source);
+  write('agenda.json', output);
   console.log(`Agenda atualizada: ${output.eventos.length} eventos.`);
+  // Agendas extras (ex.: "NÃO MARCAR SHOW"), compartilhadas só como livre/ocupado.
+  const extras = (context.window.BANDA.agendaBloqueios?.ids || []).filter(Boolean);
+  const dates = new Set(busyDates(source));
+  for (const id of extras) busyDates(await download(id)).forEach(d => dates.add(d));
+  write('bloqueios.json', {atualizadoEm:output.atualizadoEm, datas:[...dates].sort()});
+  console.log(`Datas ocupadas: ${dates.size} (${extras.length} agenda(s) de bloqueio).`);
 }
 if (require.main === module) main().catch(error => {console.error(error.message); process.exitCode=1;});
-module.exports = {convert};
+module.exports = {convert, busyDates};

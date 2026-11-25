@@ -3915,7 +3915,7 @@
     inicio: ["inicio"],
     sobre: ["sobre"],
     repertorio: ["repertorio"],
-    agenda: ["agenda"],
+    agenda: ["agenda", "datas-livres"],
     galeria: ["galeria"],
     videos: ["videos"],
     contrate: ["contrate", "faq"]
@@ -5537,6 +5537,7 @@
     { href: "#videos", label: "Vídeos" },
     { href: "#galeria", label: "Galeria" },
     { href: "#agenda", label: "Agenda" },
+    { href: "#datas-livres", label: "Datas livres" },
     { href: "#contrate", label: "Contrate" },
     { href: "#faq", label: "Dúvidas" }
   ];
@@ -5651,6 +5652,19 @@
   }
 
   // ../../src/App.tsx
+  // Calendário de datas livres (só livre/ocupado). A lógica fica em datas-livres.js.
+  function DatasLivres() {
+    const ref = useRef(null);
+    const T = window.CONTEUDO.DATAS_LIVRES_TEXTOS;
+    useEffect(() => { if (ref.current && window.DatasLivres) window.DatasLivres.montar(ref.current, {eventosReserva: CONFIG.agenda}); }, []);
+    return jsx("section",{id:"datas-livres","aria-labelledby":"datas-livres-titulo",className:"section overflow-hidden",children:
+      jsxs("div",{className:"container-site relative",children:[
+        jsx(SectionHeading,{id:"datas-livres-titulo",eyebrow:T.selo,title:T.titulo,highlight:T.destaque,subtitle:T.subtitulo}),
+        jsx("div",{ref,className:"mx-auto max-w-5xl"})
+      ]})
+    });
+  }
+
   function App() {
     return /* @__PURE__ */ jsxs(Fragment2, { children: [
       /* @__PURE__ */ jsx("a", { href: "#conteudo", className: "skip-link", children: "Pular para o conteúdo" }),
@@ -5663,6 +5677,7 @@
         jsx(Videos, {}),
         jsx(Gallery, {}),
         jsx(Agenda, {}),
+        jsx(DatasLivres, {}),
         /* @__PURE__ */ jsx(Booking, {}),
         /* @__PURE__ */ jsx(FAQ2, {})
       ] }),
