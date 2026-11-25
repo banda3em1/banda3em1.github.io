@@ -43,4 +43,8 @@ Dias ocupados = todos os eventos da agenda SHOWS (inclusive privados e `[nao-sit
 2. Em "Permissões de acesso", marque "Disponibilizar publicamente" e escolha "Ver apenas livre/ocupado (ocultar detalhes)".
 3. Copie o "ID da agenda" (em "Integrar agenda") e cole em `dist/conteudo.js`, em `agendaBloqueios.ids`.
 
+Atenção: o modo "livre/ocupado" esconde eventos marcados como "Disponível". Se a agenda de bloqueios usa esse modo, deixe os eventos como "Ocupado".
+
+Alternativa privada (recomendada): em Configurações da agenda → "Endereço secreto no formato iCal", copie o link e salve no GitHub em Settings → Secrets and variables → Actions → New repository secret, com o nome `AGENDA_BLOQUEIOS_ICS`. Assim a agenda continua privada e todos os eventos contam como ocupados.
+
 A rotina grava só as datas em `assets/bloqueios.json`, junto com a agenda de shows.

@@ -75,9 +75,10 @@ function busyDates(source, now = new Date()) {
 }
 
 async function download(id) {
-  const url = 'https://calendar.google.com/calendar/ical/' + encodeURIComponent(id) + '/public/basic.ics';
+  const url = /^https:\/\//.test(id) ? id : 'https://calendar.google.com/calendar/ical/' + encodeURIComponent(id) + '/public/basic.ics';
+  const label = /^https:\/\//.test(id) ? 'agenda secreta' : id;
   const response = await fetch(url, {signal:AbortSignal.timeout(30000)});
-  if (!response.ok) throw Error('Google Agenda (' + id + '): HTTP ' + response.status);
+  if (!response.ok) throw Error('Google Agenda (' + label + '): HTTP ' + response.status);
   return response.text();
 }
 
@@ -93,7 +94,8 @@ async function main() {
   write('agenda.json', output);
   console.log(`Agenda atualizada: ${output.eventos.length} eventos.`);
   // Agendas extras (ex.: "NÃO MARCAR SHOW"), compartilhadas só como livre/ocupado.
-  const extras = (context.window.BANDA.agendaBloqueios?.ids || []).filter(Boolean);
+  // Endereço secreto iCal fica no segredo AGENDA_BLOQUEIOS_ICS do GitHub (nunca no código).
+  const extras = [...(context.window.BANDA.agendaBloqueios?.ids || []), process.env.AGENDA_BLOQUEIOS_ICS].filter(Boolean);
   const dates = new Set(busyDates(source));
   for (const id of extras) busyDates(await download(id)).forEach(d => dates.add(d));
   write('bloqueios.json', {atualizadoEm:output.atualizadoEm, datas:[...dates].sort()});
