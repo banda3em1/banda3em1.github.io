@@ -1,0 +1,56 @@
+/* Calendário de datas livres — cores suaves sobre o fundo escuro do site */
+#datas-livres {
+  --dl-verde: rgba(74, 222, 128, 0.16);
+  --dl-verde-borda: rgba(74, 222, 128, 0.38);
+  --dl-verde-txt: #c6f6d5;
+  --dl-amarelo: rgba(250, 204, 21, 0.13);
+  --dl-amarelo-borda: rgba(250, 204, 21, 0.34);
+  --dl-amarelo-txt: #fdf0b0;
+  --dl-vermelho: rgba(248, 113, 113, 0.16);
+  --dl-vermelho-borda: rgba(248, 113, 113, 0.38);
+  --dl-vermelho-txt: #fecaca;
+}
+#datas-livres .dl-grade { display: grid; gap: 1.5rem; margin-top: 3rem; }
+@media (min-width: 1024px) { #datas-livres .dl-grade { grid-template-columns: 1fr 320px; align-items: start; } }
+#datas-livres .dl-cal,
+#datas-livres .dl-painel {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+}
+#datas-livres .dl-topo { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+#datas-livres .dl-nav {
+  width: 2.5rem; height: 2.5rem; flex: none; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; font-size: 1.5rem; line-height: 1;
+  background: rgba(255, 255, 255, 0.04); cursor: pointer;
+}
+#datas-livres .dl-nav:disabled { opacity: 0.3; cursor: default; }
+#datas-livres .dl-legenda { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1rem; font-size: 0.8rem; color: #c9c9d6; list-style: none; margin: 0; padding: 0; }
+#datas-livres .dl-legenda li { display: flex; align-items: center; gap: 0.4rem; }
+#datas-livres .dl-bolinha { width: 0.85rem; height: 0.85rem; border-radius: 0.25rem; border: 1px solid; }
+#datas-livres .dl-meses { display: grid; gap: 1.75rem; margin-top: 1.25rem; }
+@media (min-width: 768px) { #datas-livres .dl-meses { grid-template-columns: 1fr 1fr; } }
+#datas-livres .dl-mes-nome { text-align: center; font-family: "Bebas Neue", sans-serif; font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; margin: 0 0 0.6rem; }
+#datas-livres .dl-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem; }
+#datas-livres .dl-cab { text-align: center; font-size: 0.72rem; font-weight: 600; color: #8b8ba0; padding-bottom: 0.2rem; }
+#datas-livres .dl-dia {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  border-radius: 0.6rem; border: 1px solid; font-size: 0.95rem; font-weight: 600;
+}
+#datas-livres .dl-livre { background: var(--dl-verde); border-color: var(--dl-verde-borda); color: var(--dl-verde-txt); }
+#datas-livres .dl-semana { background: var(--dl-amarelo); border-color: var(--dl-amarelo-borda); color: var(--dl-amarelo-txt); }
+#datas-livres .dl-ocupado { background: var(--dl-vermelho); border-color: var(--dl-vermelho-borda); color: var(--dl-vermelho-txt); }
+#datas-livres .dl-dia.dl-ocupado { text-decoration: line-through; text-decoration-color: rgba(254, 202, 202, 0.55); }
+#datas-livres .dl-passado { border-color: transparent; color: rgba(255, 255, 255, 0.2); }
+#datas-livres .dl-hoje { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7); }
+#datas-livres .dl-painel { display: flex; flex-direction: column; gap: 0.9rem; }
+#datas-livres .dl-painel-titulo { font-family: "Bebas Neue", sans-serif; font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; margin: 0; }
+#datas-livres .dl-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+#datas-livres .dl-campos label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; color: #c9c9d6; }
+#datas-livres select {
+  width: 100%; padding: 0.6rem 0.5rem; border-radius: 0.6rem; font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.15); background: #0d0d1c; color: #fff;
+}
+#datas-livres .dl-copiar { width: 100%; justify-content: center; }
+#datas-livres .dl-aviso { min-height: 1.2em; margin: 0; font-size: 0.85rem; color: var(--dl-verde-txt); }

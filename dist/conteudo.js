@@ -270,6 +270,11 @@ window.BANDA = {
     "id": "bandatresemum@gmail.com",
     "fusoHorario": "America/Sao_Paulo"
   },
+  // Agendas do Google que só bloqueiam datas (ex.: "NÃO MARCAR SHOW").
+  // Compartilhe como "ver apenas livre/ocupado" e cole aqui o ID da agenda.
+  "agendaBloqueios": {
+    "ids": ["2ec7bd09dc7f191a34ea6ca522b397810a105626cfc9f4bcc09a5574e07a3bc3@group.calendar.google.com"]
+  },
   // Histórico da importação manual; a seção do site usa agendaGoogle acima.
   "agendaImportacao": {
     "origem": "Google Agenda — bandatresemum@gmail.com",
@@ -624,6 +629,12 @@ window.CONTEUDO = {
     "vazioTitulo": "Novas datas em breve.",
     "vazioTexto": "Siga a banda no Instagram para acompanhar as próximas datas.",
     "chamada": "Quer a Banda 3 em 1 no seu evento?"
+  },
+  "DATAS_LIVRES_TEXTOS": {
+    "selo": "Disponibilidade",
+    "titulo": "Datas",
+    "destaque": "livres",
+    "subtitulo": "A Banda 3 em 1 toca aos sábados e domingos. Veja as datas ainda livres e chame no WhatsApp para garantir a sua."
   },
   "GALERIA_TEXTOS": {
     "selo": "Fotos",
