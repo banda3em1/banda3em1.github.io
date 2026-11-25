@@ -273,7 +273,7 @@ window.BANDA = {
   // Agendas do Google que só bloqueiam datas (ex.: "NÃO MARCAR SHOW").
   // Compartilhe como "ver apenas livre/ocupado" e cole aqui o ID da agenda.
   "agendaBloqueios": {
-    "ids": []
+    "ids": ["2ec7bd09dc7f191a34ea6ca522b397810a105626cfc9f4bcc09a5574e07a3bc3@group.calendar.google.com"]
   },
   // Histórico da importação manual; a seção do site usa agendaGoogle acima.
   "agendaImportacao": {
